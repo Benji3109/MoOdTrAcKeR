@@ -1,125 +1,276 @@
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi d'Humeur</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
 
-const MoodTracker = () => {
-  const [name, setName] = useState('');
-  const [selectedMood, setSelectedMood] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
-  const [moodHistory, setMoodHistory] = useState([]);
-  
-  const moods = [
-    { emoji: "😊", label: "Très bien" },
-    { emoji: "😐", label: "Neutre" },
-    { emoji: "🤔", label: "Indécis" },
-    { emoji: "😤", label: "Frustré" },
-    { emoji: "🤒", label: "Malade" }
-  ];
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-  const handleMoodSelect = (mood) => {
-    setSelectedMood(mood);
-  };
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
 
-  const handleSubmit = () => {
-    if (selectedMood && name.trim()) {
-      const newMoodEntry = {
-        name: name.trim(),
-        mood: selectedMood,
-        timestamp: new Date().toLocaleString('fr-FR')
-      };
-      
-      setMoodHistory(prevHistory => [newMoodEntry, ...prevHistory]);
-      setSubmitted(true);
-      
-      setTimeout(() => {
-        setSubmitted(false);
-        setSelectedMood(null);
-        setName('');
-      }, 3000);
-    }
-  };
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            font-size: 24px;
+        }
 
-  return (
-    <div className="w-full max-w-2xl mx-auto space-y-6">
-      <Card className="bg-white shadow-lg">
-        <CardContent className="p-6">
-          <h1 className="text-2xl font-bold text-center mb-6">Comment allez-vous aujourd'hui ?</h1>
-          
-          <div className="mb-6">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-              Votre prénom
-            </label>
-            <Input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Entrez votre prénom"
-              className="w-full p-2 border rounded-lg"
-            />
-          </div>
+        .input-group {
+            margin-bottom: 24px;
+        }
 
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            {moods.map((mood) => (
-              <button
-                key={mood.label}
-                onClick={() => handleMoodSelect(mood)}
-                className={`p-4 text-center rounded-lg transition-all ${
-                  selectedMood === mood 
-                    ? 'bg-blue-100 ring-2 ring-blue-500' 
-                    : 'hover:bg-gray-100'
-                }`}
-              >
-                <div className="text-4xl mb-2">{mood.emoji}</div>
-                <div className="text-sm">{mood.label}</div>
-              </button>
-            ))}
-          </div>
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+        }
 
-          <button
-            onClick={handleSubmit}
-            disabled={!selectedMood || !name.trim() || submitted}
-            className={`w-full py-3 px-4 rounded-lg text-white font-medium transition-colors ${
-              !selectedMood || !name.trim() || submitted
-                ? 'bg-gray-400'
-                : 'bg-blue-500 hover:bg-blue-600'
-            }`}
-          >
-            {submitted ? 'Merci pour votre réponse !' : 'Valider'}
-          </button>
+        .input-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
 
-          {submitted && (
-            <div className="mt-4 text-center text-green-600">
-              Merci {name} d'avoir partagé votre humeur !
+        .moods-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .mood-button {
+            padding: 16px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .mood-button:hover {
+            background-color: #f3f4f6;
+        }
+
+        .mood-button.selected {
+            background-color: #e0f2fe;
+            border-color: #3b82f6;
+        }
+
+        .mood-emoji {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .mood-label {
+            font-size: 14px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-button:hover {
+            background-color: #2563eb;
+        }
+
+        .submit-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            margin-bottom: 12px;
+        }
+
+        .history-item-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .history-emoji {
+            font-size: 24px;
+        }
+
+        .history-name {
+            font-weight: 500;
+        }
+
+        .history-mood {
+            color: #6b7280;
+        }
+
+        .history-timestamp {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .success-message {
+            text-align: center;
+            color: #059669;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>Comment allez-vous aujourd'hui ?</h1>
+            
+            <div class="input-group">
+                <label for="name">Votre prénom</label>
+                <input type="text" id="name" placeholder="Entrez votre prénom">
             </div>
-          )}
-        </CardContent>
-      </Card>
 
-      {moodHistory.length > 0 && (
-        <Card className="bg-white shadow-lg">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-bold mb-4">Historique des humeurs</h2>
-            <div className="space-y-4">
-              {moodHistory.map((entry, index) => (
-                <div 
-                  key={index}
-                  className="p-4 border rounded-lg bg-gray-50 flex items-center justify-between"
-                >
-                  <div className="flex items-center space-x-4">
-                    <span className="text-2xl">{entry.mood.emoji}</span>
-                    <span className="font-medium">{entry.name}</span>
-                    <span className="text-gray-500">{entry.mood.label}</span>
-                  </div>
-                  <span className="text-sm text-gray-500">{entry.timestamp}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            <div class="moods-grid" id="moodsGrid"></div>
+
+            <button id="submitButton" class="submit-button" disabled>Valider</button>
+            <div id="successMessage" class="success-message"></div>
+        </div>
+
+        <div id="historyCard" class="card" style="display: none;">
+            <h2>Historique des humeurs</h2>
+            <div id="historyContainer"></div>
+        </div>
     </div>
-  );
-};
 
-export default MoodTracker;
+    <script>
+        const moods = [
+            { emoji: "😊", label: "Très bien" },
+            { emoji: "😐", label: "Neutre" },
+            { emoji: "🤔", label: "Indécis" },
+            { emoji: "😤", label: "Frustré" },
+            { emoji: "🤒", label: "Malade" }
+        ];
+
+        let selectedMood = null;
+        let moodHistory = [];
+
+        // Initialisation des boutons d'humeur
+        const moodsGrid = document.getElementById('moodsGrid');
+        moods.forEach(mood => {
+            const button = document.createElement('button');
+            button.className = 'mood-button';
+            button.innerHTML = `
+                <div class="mood-emoji">${mood.emoji}</div>
+                <div class="mood-label">${mood.label}</div>
+            `;
+            button.onclick = () => selectMood(mood, button);
+            moodsGrid.appendChild(button);
+        });
+
+        function selectMood(mood, button) {
+            // Réinitialiser tous les boutons
+            document.querySelectorAll('.mood-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            button.classList.add('selected');
+            selectedMood = mood;
+            updateSubmitButton();
+        }
+
+        const nameInput = document.getElementById('name');
+        const submitButton = document.getElementById('submitButton');
+        const successMessage = document.getElementById('successMessage');
+        const historyCard = document.getElementById('historyCard');
+        const historyContainer = document.getElementById('historyContainer');
+
+        nameInput.addEventListener('input', updateSubmitButton);
+
+        function updateSubmitButton() {
+            submitButton.disabled = !nameInput.value.trim() || !selectedMood;
+        }
+
+        function formatDate(date) {
+            return new Intl.DateTimeFormat('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        }
+
+        submitButton.onclick = () => {
+            if (selectedMood && nameInput.value.trim()) {
+                const newEntry = {
+                    name: nameInput.value.trim(),
+                    mood: selectedMood,
+                    timestamp: new Date()
+                };
+
+                moodHistory.unshift(newEntry);
+                updateHistory();
+                
+                successMessage.textContent = `Merci ${newEntry.name} d'avoir partagé votre humeur !`;
+                submitButton.disabled = true;
+
+                setTimeout(() => {
+                    successMessage.textContent = '';
+                    nameInput.value = '';
+                    selectedMood = null;
+                    document.querySelectorAll('.mood-button').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    updateSubmitButton();
+                }, 3000);
+            }
+        };
+
+        function updateHistory() {
+            if (moodHistory.length > 0) {
+                historyCard.style.display = 'block';
+                historyContainer.innerHTML = moodHistory.map(entry => `
+                    <div class="history-item">
+                        <div class="history-item-left">
+                            <span class="history-emoji">${entry.mood.emoji}</span>
+                            <span class="history-name">${entry.name}</span>
+                            <span class="history-mood">${entry.mood.label}</span>
+                        </div>
+                        <span class="history-timestamp">${formatDate(entry.timestamp)}</span>
+                    </div>
+                `).join('');
+            }
+        }
+    </script>
+</body>
+</html>
