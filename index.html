@@ -160,8 +160,8 @@
         }
 
         .delete-button {
-            background-color: #f3f4f6;
-            color: #4b5563;
+            background-color: #dc2626;
+            color: white;
             border: none;
             border-radius: 4px;
             padding: 8px 12px;
@@ -172,8 +172,7 @@
         }
 
         .delete-button:hover {
-            background-color: #dc2626;
-            color: white;
+            background-color: #b91c1c;
         }
 
         .erase-all-button {
@@ -224,8 +223,8 @@
 
         <div id="historyCard" class="card" style="display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h2>Historique des humeurs</h2>
-                <button onclick="eraseAll()" class="erase-all-button">Erase</button>
+                <h2 style="margin: 0;">Historique des humeurs</h2>
+                <button onclick="eraseAll()" class="delete-button">Erase</button>
             </div>
             <div id="historyContainer"></div>
         </div>
