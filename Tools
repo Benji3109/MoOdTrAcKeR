@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi d'Humeur</title>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0 0 24px 0;
+            color: #000;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin: 0 0 20px 0;
+            color: #000;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-sizing: border-box;
+        }
+
+        .moods-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .mood-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .mood-button:hover {
+            transform: scale(1.05);
+        }
+
+        .mood-button.selected {
+            background-color: #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .mood-emoji {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .mood-label {
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            background-color: #a0aec0;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .submit-button:not(:disabled) {
+            background-color: #4299e1;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .history-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .history-emoji {
+            font-size: 24px;
+        }
+
+        .history-name {
+            font-weight: 500;
+        }
+
+        .history-mood {
+            color: #718096;
+        }
+
+        .delete-button {
+            background: none;
+            border: none;
+            color: #e53e3e;
+            cursor: pointer;
+            padding: 8px;
+            font-size: 16px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .delete-button:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>Comment allez-vous aujourd'hui ?</h1>
+            
+            <label class="input-label">Votre prénom</label>
+            <input type="text" id="nameInput" class="input-field" placeholder="Entrez votre prénom">
+
+            <div class="moods-grid" id="moodButtons">
+                <!-- Les humeurs seront ajoutées ici via JavaScript -->
+            </div>
+
+            <button id="submitButton" class="submit-button" disabled>
+                Valider
+            </button>
+        </div>
+
+        <div id="historyContainer" class="card" style="display: none;">
+            <h2>Historique des humeurs</h2>
+            <div id="moodHistory">
+                <!-- L'historique sera ajouté ici via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const moods = [
+            { emoji: "😊", label: "Très bien" },
+            { emoji: "🙂", label: "Neutre" },
+            { emoji: "🤔", label: "Indécis" },
+            { emoji: "😤", label: "Frustré" },
+            { emoji: "😢", label: "Malade" }
+        ];
+
+        let selectedMood = null;
+        const moodHistory = [];
+
+        // Création des boutons d'humeur
+        const moodButtonsContainer = document.getElementById('moodButtons');
+        moods.forEach(mood => {
+            const button = document.createElement('button');
+            button.className = 'mood-button';
+            button.innerHTML = `
+                <div class="mood-emoji">${mood.emoji}</div>
+                <div class="mood-label">${mood.label}</div>
+            `;
+            button.onclick = () => selectMood(mood, button);
+            moodButtonsContainer.appendChild(button);
+        });
+
+        function selectMood(mood, selectedButton) {
+            document.querySelectorAll('.mood-button').forEach(btn => {
+                btn.className = 'mood-button';
+            });
+            
+            selectedButton.className = 'mood-button selected';
+            selectedMood = mood;
+            
+            updateSubmitButton();
+        }
+
+        const nameInput = document.getElementById('nameInput');
+        const submitButton = document.getElementById('submitButton');
+        const historyContainer = document.getElementById('historyContainer');
+        const moodHistoryContainer = document.getElementById('moodHistory');
+
+        nameInput.addEventListener('input', updateSubmitButton);
+
+        function updateSubmitButton() {
+            const name = nameInput.value.trim();
+            submitButton.disabled = !(name && selectedMood);
+        }
+
+        function deleteMoodEntry(index) {
+            moodHistory.splice(index, 1);
+            updateHistory();
+        }
+
+        submitButton.onclick = () => {
+            const name = nameInput.value.trim();
+            if (name && selectedMood) {
+                const newEntry = {
+                    name: name,
+                    mood: selectedMood
+                };
+                
+                moodHistory.unshift(newEntry);
+                updateHistory();
+                
+                nameInput.value = '';
+                selectedMood = null;
+                document.querySelectorAll('.mood-button').forEach(btn => {
+                    btn.className = 'mood-button';
+                });
+                updateSubmitButton();
+            }
+        };
+
+        function updateHistory() {
+            if (moodHistory.length > 0) {
+                historyContainer.style.display = 'block';
+                moodHistoryContainer.innerHTML = moodHistory.map((entry, index) => `
+                    <div class="history-item">
+                        <div class="history-left">
+                            <span class="history-emoji">${entry.mood.emoji}</span>
+                            <span class="history-name">${entry.name}</span>
+                            <span class="history-mood">${entry.mood.label}</span>
+                        </div>
+                        <button onclick="deleteMoodEntry(${index})" class="delete-button">
+                            ❌
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                historyContainer.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
