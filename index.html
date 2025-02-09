@@ -159,6 +159,23 @@
             margin-right: 12px;
         }
 
+        .delete-button {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 12px;
+        }
+
+        .delete-button:hover {
+            background-color: #dc2626;
+            color: white;
+        }
+
         .success-message {
             text-align: center;
             color: #059669;
@@ -297,15 +314,11 @@
                 historyCard.style.display = 'block';
                 historyContainer.innerHTML = moodHistory.map((entry, index) => `
                     <div class="history-item">
-                        <div class="history-item-left">
-                            <span class="history-emoji">${entry.mood.emoji}</span>
-                            <span class="history-name">${entry.name}</span>
-                            <span class="history-mood">${entry.mood.label}</span>
-                        </div>
-                        <div class="history-item-right">
-                            <span class="history-timestamp">${formatDate(entry.timestamp)}</span>
-                            <button onclick="deleteEntry(${index})" class="delete-button">Supprimer</button>
-                        </div>
+                        <span class="history-emoji">${entry.mood.emoji}</span>
+                        <span class="history-name">${entry.name}</span>
+                        <span class="history-mood">${entry.mood.label}</span>
+                        <span class="history-timestamp">${formatDate(entry.timestamp)}</span>
+                        <button onclick="deleteEntry(${index})" class="delete-button">×</button>
                     </div>
                 `).join('');
             } else {
