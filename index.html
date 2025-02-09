@@ -3,270 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi d'Humeur</title>
-    
+    <title>FormAction</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
         }
-
-        .container {
-            max-width: 600px;
+        .search-bar {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .search-bar input {
+            width: 60%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+        }
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .category {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .category:hover {
+            transform: translateY(-5px);
+        }
+        .category h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .resource-list {
+            list-style: none;
+            padding: 0;
+        }
+        .resource-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .resource-item:hover {
+            background-color: #e9ecef;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #e1e8f0;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 50px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        .qr-code {
+            width: 300px;
+            height: 300px;
+            display: block;
             margin: 0 auto;
         }
-
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        h1 {
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
             font-size: 24px;
-            margin: 0 0 24px 0;
-            color: #000;
-        }
-
-        h2 {
-            font-size: 20px;
-            margin: 0 0 20px 0;
-            color: #000;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 16px;
-            color: #4a5568;
-            margin-bottom: 8px;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            box-sizing: border-box;
-        }
-
-        .moods-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .mood-button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 16px;
-            border: none;
-            background: none;
             cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .mood-button:hover {
-            transform: scale(1.05);
-        }
-
-        .mood-button.selected {
-            background-color: #e2e8f0;
-            border-radius: 8px;
-        }
-
-        .mood-emoji {
-            font-size: 40px;
-            margin-bottom: 8px;
-        }
-
-        .mood-label {
-            font-size: 14px;
-            color: #4a5568;
-        }
-
-        .submit-button {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 8px;
-            background-color: #a0aec0;
             color: white;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
         }
-
-        .submit-button:not(:disabled) {
-            background-color: #4299e1;
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-
-        .history-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .history-emoji {
-            font-size: 24px;
-        }
-
-        .history-name {
-            font-weight: 500;
-        }
-
-        .history-mood {
-            color: #718096;
-        }
-
-        .delete-button {
-            background: none;
-            border: none;
-            color: #e53e3e;
-            cursor: pointer;
-            padding: 8px;
-            font-size: 16px;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-
-        .delete-button:hover {
-            opacity: 1;
+        @media (max-width: 768px) {
+            .search-bar input {
+                width: 90%;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <h1>Ressources Pédagogiques pour Formateurs</h1>
+        <p>La boîte à outils du formateur</p>
+    </div>
     <div class="container">
-        <div class="card">
-            <h1>Comment allez-vous aujourd'hui ?</h1>
-            
-            <label class="input-label">Votre prénom</label>
-            <input type="text" id="nameInput" class="input-field" placeholder="Entrez votre prénom">
-
-            <div class="moods-grid" id="moodButtons">
-                <!-- Les humeurs seront ajoutées ici via JavaScript -->
-            </div>
-
-            <button id="submitButton" class="submit-button" disabled>
-                Valider
-            </button>
+        <div class="search-bar">
+            <input type="text" placeholder="Rechercher une ressource...">
         </div>
-
-        <div id="historyContainer" class="card" style="display: none;">
-            <h2>Historique des humeurs</h2>
-            <div id="moodHistory">
-                <!-- L'historique sera ajouté ici via JavaScript -->
+        <div class="categories">
+            <div class="category">
+                <h2>Ice Breakers</h2>
+                <ul class="resource-list">
+                    <li class="resource-item" onclick="showQRCode()">MoOdTrAcKeR</li>
+                </ul>
+            </div>
+            <div class="category">
+                <h2>Jeux Pédagogiques</h2>
+                <ul class="resource-list">
+                </ul>
             </div>
         </div>
     </div>
+    <div id="qrModal" class="modal">
+        <span class="close-button" onclick="closeModal()">&times;</span>
+        <div class="modal-content">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsAQMAAABDsxw2AAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAEv0lEQVR4nO2aW3LsKAyGZeEFWAqLyNKylCzF+19KJMCOk3bS7nNuVU09zER2bPGBfiEk2+ufVyaTyWQymUwmk8lkMplMJpPJZDKZTCaTyWQymUwmk8lkMplMJpPJZDL9C1JhU0d0gKnWsYiw+XY+k6lbUqtEg5XLtkFsC0SL7JEm3xauIOSsghyP7GiywvAFxBusXsM7rOWJNdGM27K8EEeVkuv7rO0B214sXUFcBHnMuiRHgxV8gwUxYtIL2Rqs7AoAJOl8nVUjjRMWRhHr4tB2Ceu6fMlK8LxnkVx+qQWxpgBYcAEiOxsWIQo53aHSXbgdSGMPK0h2bPUIsdRwQMvKvnUEIBXU2L9d6u6QMOZhebwV+Fjt641YGLrBRk2A7GspkcqplwUQPJhShwWtl6q6XooDUaqFmGgZVsoOLwUcLxuVuVNwY109QiyhirPHYjMzgUf2Niu1UF2YUmpSZI3J79tCnRbNuZ+TSwkWs1JMnmQJVlYTLmVMgN1BW/A7rJK4Dw0WRY/stHJLxMRBPVALlsKwgVbxAUv25VNW5b7UsGtdqYFZQ9ZDI8AJC7PYIbPyxEp4Uas0zARhNFkFELs6K3KoZCLxfsDCLBl2a3kKbPtDrNXlEqhM2e2wBBBTAx3qGutS4GWxDMu3dC1Lq0LTtpblpQuQ+V5LqRvJsRTXXpdgISWvB6fkHy+bMEusUNBSTqzgODqRwcIWa/T4ZpDg8mOWr5YqYoWOQvthGXFYeIdVJ+7laSGn5ZisxNpS4spFQiQc3rLbm/oYXlaJDBjYYqWKxTYsy8KAUGNx4y56WOmABewPWD0jqQUo5wP3ZF1K3LCW1Fh5LsuOWK31OQJvsLxTz2Xhe5aaGbLfZqmlwhIGrRxe6gsRr+5SJpPJZPqW8Nck+VcoqF/jlwnKY/aA5KU9YjQJjlZSibCvX9EGlFEbrVqmOFahD0KrKR7Wt3yxmGXtcg7ROvBKi1iXurDGrw6UmFhNV3iYIZ54CIAYAOYnEXVwYp0uaKDhLkFovNQVhMTJcJlsXL42L0cUbEXMiMWVBFgvBuKXWSd4GpVLURasrOA3WG5RvWGJkIiM9VJfVKJNnw+WFB6rPDhlg0I1Ij+X1QgpIXVXHg9pjCJLtWvVEiRyWDVnV5C/h/7Iu4Tg6FaXRUNy1+uAFeqGZV0pJ6UOt0nzFkt4u9ZerDiI+jZrdTyxhBvsPP011mDsNbqVm3Nxl7Wc2bPpMQvplIrGNy1WVTbVGYtZjPsBy6EwRH6kZL6w0q4cAjpGy3FYEbSS4JhfLKYmLnODhf6x7VhHLF4vQHViSTvnpM/JxsIlSyh01GAl5u3nsnq0jzgR1FVWVq6C7kf3fFbfZKXHrp1mQ+VSopOkr7E0ZAtYHxfYupDlDsuhqBjNm0GLBdvbQC3XZWkYJTLV9WIBBxF30WrFalX4jYWtjcVJQCxegS8lDljBLdpYCDAtluZTEgXKjR5PDFiLWv6OlSRQEXIqvC4csy7ZTf2yM6Jxh1jbX2AV7jcmk8lkMplMJpPJZDKZTCaTyWQymUwmk8lkMplMJpPJZDKZTCaTyfT/0T+YskkxoNcqwwAAAABJRU5ErkJggg==" alt="QR Code" class="qr-code">
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 - Plateforme de Ressources Pédagogiques | Mise à jour régulière des contenus</p>
+    </footer>
 
     <script>
-        const moods = [
-            { emoji: "😊", label: "Très bien" },
-            { emoji: "🙂", label: "Neutre" },
-            { emoji: "🤔", label: "Indécis" },
-            { emoji: "😤", label: "Frustré" },
-            { emoji: "😢", label: "Malade" }
-        ];
-
-        let selectedMood = null;
-        const moodHistory = [];
-
-        // Création des boutons d'humeur
-        const moodButtonsContainer = document.getElementById('moodButtons');
-        moods.forEach(mood => {
-            const button = document.createElement('button');
-            button.className = 'mood-button';
-            button.innerHTML = `
-                <div class="mood-emoji">${mood.emoji}</div>
-                <div class="mood-label">${mood.label}</div>
-            `;
-            button.onclick = () => selectMood(mood, button);
-            moodButtonsContainer.appendChild(button);
-        });
-
-        function selectMood(mood, selectedButton) {
-            document.querySelectorAll('.mood-button').forEach(btn => {
-                btn.className = 'mood-button';
-            });
-            
-            selectedButton.className = 'mood-button selected';
-            selectedMood = mood;
-            
-            updateSubmitButton();
+        function showQRCode() {
+            document.getElementById('qrModal').style.display = 'flex';
         }
 
-        const nameInput = document.getElementById('nameInput');
-        const submitButton = document.getElementById('submitButton');
-        const historyContainer = document.getElementById('historyContainer');
-        const moodHistoryContainer = document.getElementById('moodHistory');
-
-        nameInput.addEventListener('input', updateSubmitButton);
-
-        function updateSubmitButton() {
-            const name = nameInput.value.trim();
-            submitButton.disabled = !(name && selectedMood);
+        function closeModal() {
+            document.getElementById('qrModal').style.display = 'none';
         }
 
-        function deleteMoodEntry(index) {
-            moodHistory.splice(index, 1);
-            updateHistory();
-        }
-
-        submitButton.onclick = () => {
-            const name = nameInput.value.trim();
-            if (name && selectedMood) {
-                const newEntry = {
-                    name: name,
-                    mood: selectedMood
-                };
-                
-                moodHistory.unshift(newEntry);
-                updateHistory();
-                
-                nameInput.value = '';
-                selectedMood = null;
-                document.querySelectorAll('.mood-button').forEach(btn => {
-                    btn.className = 'mood-button';
-                });
-                updateSubmitButton();
-            }
-        };
-
-        function updateHistory() {
-            if (moodHistory.length > 0) {
-                historyContainer.style.display = 'block';
-                moodHistoryContainer.innerHTML = moodHistory.map((entry, index) => `
-                    <div class="history-item">
-                        <div class="history-left">
-                            <span class="history-emoji">${entry.mood.emoji}</span>
-                            <span class="history-name">${entry.name}</span>
-                            <span class="history-mood">${entry.mood.label}</span>
-                        </div>
-                        <button onclick="deleteMoodEntry(${index})" class="delete-button">
-                            ❌
-                        </button>
-                    </div>
-                `).join('');
-            } else {
-                historyContainer.style.display = 'none';
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('qrModal')) {
+                closeModal();
             }
         }
     </script>
