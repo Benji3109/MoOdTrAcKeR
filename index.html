@@ -120,6 +120,21 @@
             margin-bottom: 12px;
         }
 
+        .delete-button {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .delete-button:hover {
+            background-color: #dc2626;
+        }
+
         .history-item-left {
             display: flex;
             align-items: center;
@@ -141,12 +156,19 @@
         .history-timestamp {
             font-size: 14px;
             color: #6b7280;
+            margin-right: 12px;
         }
 
         .success-message {
             text-align: center;
             color: #059669;
             margin-top: 16px;
+        }
+
+        .history-item-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
     </style>
 </head>
@@ -182,6 +204,7 @@
         ];
 
         let selectedMood = null;
+        
         // Récupération de l'historique depuis le localStorage
         let moodHistory = JSON.parse(localStorage.getItem('moodHistory') || '[]');
         // Conversion des dates stockées en objets Date
@@ -263,24 +286,35 @@
             }
         };
 
-        // Afficher l'historique au chargement de la page
-        document.addEventListener('DOMContentLoaded', updateHistory);
+        function deleteEntry(index) {
+            moodHistory.splice(index, 1);
+            localStorage.setItem('moodHistory', JSON.stringify(moodHistory));
+            updateHistory();
+        }
 
         function updateHistory() {
             if (moodHistory.length > 0) {
                 historyCard.style.display = 'block';
-                historyContainer.innerHTML = moodHistory.map(entry => `
+                historyContainer.innerHTML = moodHistory.map((entry, index) => `
                     <div class="history-item">
                         <div class="history-item-left">
                             <span class="history-emoji">${entry.mood.emoji}</span>
                             <span class="history-name">${entry.name}</span>
                             <span class="history-mood">${entry.mood.label}</span>
                         </div>
-                        <span class="history-timestamp">${formatDate(entry.timestamp)}</span>
+                        <div class="history-item-right">
+                            <span class="history-timestamp">${formatDate(entry.timestamp)}</span>
+                            <button onclick="deleteEntry(${index})" class="delete-button">Supprimer</button>
+                        </div>
                     </div>
                 `).join('');
+            } else {
+                historyCard.style.display = 'none';
             }
         }
+
+        // Afficher l'historique au chargement de la page
+        document.addEventListener('DOMContentLoaded', updateHistory);
     </script>
 </body>
 </html>
