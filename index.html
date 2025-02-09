@@ -176,6 +176,23 @@
             color: white;
         }
 
+        .erase-all-button {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            float: right;
+        }
+
+        .erase-all-button:hover {
+            background-color: #dc2626;
+            color: white;
+        }
+
         .success-message {
             text-align: center;
             color: #059669;
@@ -206,7 +223,10 @@
         </div>
 
         <div id="historyCard" class="card" style="display: none;">
-            <h2>Historique des humeurs</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h2>Historique des humeurs</h2>
+                <button onclick="eraseAll()" class="erase-all-button">Erase</button>
+            </div>
             <div id="historyContainer"></div>
         </div>
     </div>
@@ -324,6 +344,12 @@
             } else {
                 historyCard.style.display = 'none';
             }
+        }
+
+        function eraseAll() {
+            moodHistory = [];
+            localStorage.setItem('moodHistory', JSON.stringify(moodHistory));
+            updateHistory();
         }
 
         // Afficher l'historique au chargement de la page
