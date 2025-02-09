@@ -182,7 +182,13 @@
         ];
 
         let selectedMood = null;
-        let moodHistory = [];
+        // Récupération de l'historique depuis le localStorage
+        let moodHistory = JSON.parse(localStorage.getItem('moodHistory') || '[]');
+        // Conversion des dates stockées en objets Date
+        moodHistory = moodHistory.map(entry => ({
+            ...entry,
+            timestamp: new Date(entry.timestamp)
+        }));
 
         // Initialisation des boutons d'humeur
         const moodsGrid = document.getElementById('moodsGrid');
@@ -239,6 +245,7 @@
                 };
 
                 moodHistory.unshift(newEntry);
+                localStorage.setItem('moodHistory', JSON.stringify(moodHistory));
                 updateHistory();
                 
                 successMessage.textContent = `Merci ${newEntry.name} d'avoir partagé votre humeur !`;
@@ -255,6 +262,9 @@
                 }, 3000);
             }
         };
+
+        // Afficher l'historique au chargement de la page
+        document.addEventListener('DOMContentLoaded', updateHistory);
 
         function updateHistory() {
             if (moodHistory.length > 0) {
